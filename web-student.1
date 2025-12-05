@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="fa">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ورود دانش‌آموز / پروفایل</title>
+  <style>
+    :root{--glass: rgba(255,255,255,0.06);--accent:#2563eb;--bg:#0f172a}
+    *{box-sizing:border-box;font-family:system-ui,'Segoe UI',Tahoma,'Helvetica Neue',Arial}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#071331 0%,#0f172a 100%);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{width:100%;max-width:920px;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));border-radius:12px;padding:20px;box-shadow:0 6px 30px rgba(2,6,23,0.6);display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    h1,h2{margin:0 0 12px 0}
+    .panel{background:rgba(255,255,255,0.02);padding:16px;border-radius:10px}
+    label{display:block;font-size:13px;margin-bottom:6px;color:#cfe6ff}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+    .row{display:flex;gap:10px}
+    button{background:var(--accent);color:white;padding:10px 12px;border-radius:10px;border:none;cursor:pointer}
+    .muted{color:#98b6db;font-size:13px}
+    .small{font-size:12px}
+    .hidden{display:none}
+    .actions{display:flex;gap:8px;align-items:center}
+    .pw-strength{height:8px;border-radius:8px;background:rgba(255,255,255,0.06);overflow:hidden}
+    .pw-strength > i{display:block;height:100%;width:0%}
+    .note{font-size:12px;color:#9fb8e0}
+    .success{color:#8ee0a8}
+    .danger{color:#ff9b9b}
+    @media (max-width:780px){.card{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+  <div class="card" dir="rtl">
+    <div class="panel" id="authPanel">
+      <h1>ورود / ثبت‌نام</h1>
+      <p class="muted">از این بخش نام‌کاربری و رمز عبور خود را بسازید یا وارد شوید تا اطلاعات دانش‌آموزی را ثبت کنید.</p>
+
+      <div id="messages" class="small" aria-live="polite"></div>
+
+      <div style="margin-top:12px">
+        <label for="username">نام کاربری</label>
+        <input id="username" placeholder="مثال: ali85" autocomplete="username">
+      </div>
+
+      <div style="margin-top:12px">
+        <label for="password">رمز عبور</label>
+        <div class="row">
+          <input id="password" type="password" placeholder="رمز عبور" autocomplete="current-password">
+          <button id="togglePw" type="button">نمایش</button>
+        </div>
+        <div style="margin-top:8px" class="pw-strength"><i id="pwBar"></i></div>
+        <div class="note">رمز عبور حداقل ۸ کاراکتر باشد. از حروف بزرگ/کوچک، اعداد و کاراکترهای ویژه استفاده کنید.</div>
+      </div>
+
+      <div style="margin-top:14px;display:flex;gap:8px">
+        <button id="btnRegister">ثبت‌نام</button>
+        <button id="btnLogin">ورود</button>
+        <button id="btnClear" style="background:transparent;border:1px solid rgba(255,255,255,0.06);">پاک کردن</button>
+      </div>
+
+      <hr style="margin:16px 0;border:none;border-top:1px dashed rgba(255,255,255,0.03)">
+
+      <div class="muted">وضعیت:</div>
+      <div style="margin-top:6px"><span id="status">هیچ کاربری وارد نشده</span></div>
+
+    </div>
+
+    <div class="panel" id="profilePanel">
+      <h2>پروفایل دانش‌آموز</h2>
+      <div class="muted">پس از ورود، این فرم برای شما فعال می‌شود.</div>
+
+      <form id="profileForm" class="hidden" onsubmit="return false;">
+        <div style="margin-top:10px">
+          <label for="fullname">نام و نام خانوادگی</label>
+          <input id="fullname" placeholder="مثال: علی محمدی">
+        </div>
+        <div style="margin-top:10px">
+          <label for="studentId">شماره دانش‌آموزی</label>
+          <input id="studentId" placeholder="مثال: 1400123">
+        </div>
+        <div style="margin-top:10px">
+          <label for="class">پایه / کلاس</label>
+          <input id="class" placeholder="مثال: دوازدهم - ریاضی">
+        </div>
+        <div style="margin-top:10px">
+          <label for="email">ایمیل</label>
+          <input id="email" type="email" placeholder="example@mail.com">
+        </div>
+        <div style="margin-top:10px">
+          <label for="phone">تلفن</label>
+          <input id="phone" placeholder="09xxxxxxxx">
+        </div>
+        <div style="margin-top:10px">
+          <label for="notes">توضیحات / آدرس</label>
+          <textarea id="notes" rows="3" placeholder="آدرس یا توضیحات اضافی"></textarea>
+        </div>
+
+        <div style="margin-top:12px" class="actions">
+          <button id="btnSave">ذخیره اطلاعات</button>
+          <button id="btnLogout" type="button" style="background:#e11d48">خروج</button>
+        </div>
+
+        <div style="margin-top:10px" class="small muted">اطلاعات در مرورگر شما ذخیره می‌شود (localStorage). برای استفاده واقعی در مدرسه، نیاز به سرور و پایگاه‌داده و روش‌های امن نگهداری رمز عبور است.</div>
+      </form>
+
+      <div id="profileView" class="hidden" style="margin-top:12px">
+        <h3>اطلاعات ذخیره‌شده</h3>
+        <div id="savedInfo" class="small muted"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ساده و واضح: این نسخه فقط سمتِ کاربر (client-side) است و از localStorage استفاده می‌کند.
+    const $ = id => document.getElementById(id);
+    const usernameEl = $('username');
+    const passwordEl = $('password');
+    const btnRegister = $('btnRegister');
+    const btnLogin = $('btnLogin');
+    const btnClear = $('btnClear');
+    const togglePw = $('togglePw');
+    const pwBar = $('pwBar');
+    const messages = $('messages');
+    const status = $('status');
+
+    const profileForm = $('profileForm');
+    const profilePanel = $('profilePanel');
+    const profileView = $('profileView');
+    const savedInfo = $('savedInfo');
+
+    function loadUsers(){
+      try{ return JSON.parse(localStorage.getItem('students_users')||'{}'); }catch(e){return {}} }
+    function saveUsers(u){ localStorage.setItem('students_users', JSON.stringify(u)); }
+
+    // هش کردن رمز از طریق SubtleCrypto (SHA-256)
+    async function hashPw(pw){
+      const enc = new TextEncoder();
+      const data = enc.encode(pw);
+      const hash = await crypto.subtle.digest('SHA-256', data);
+      const arr = Array.from(new Uint8Array(hash));
+      return arr.map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+
+    function showMsg(txt, type=''){
+      messages.textContent = txt;
+      messages.className = type ? ('small ' + (type==='ok'? 'success':'danger')) : 'small';
+    }
+
+    function updatePwStrength(){
+      const v = passwordEl.value;
+      let score = 0;
+      if(v.length>=8) score+=1;
+      if(/[A-Z]/.test(v)) score+=1;
+      if(/[a-z]/.test(v)) score+=1;
+      if(/[0-9]/.test(v)) score+=1;
+      if(/[^A-Za-z0-9]/.test(v)) score+=1;
+      const pct = Math.min(100, score*20);
+      pwBar.style.width = pct + '%';
+      pwBar.style.background = pct>80? '#6ee7b7' : pct>40? '#f59e0b' : '#f97316';
+    }
+
+    togglePw.addEventListener('click', ()=>{
+      if(passwordEl.type==='password'){passwordEl.type='text';togglePw.textContent='پنهان'}else{passwordEl.type='password';togglePw.textContent='نمایش'}
+    });
+    passwordEl.addEventListener('input', updatePwStrength);
+
+    btnClear.addEventListener('click', ()=>{ usernameEl.value=''; passwordEl.value=''; showMsg('فیلدها پاک شدند'); updatePwStrength(); });
+
+    btnRegister.addEventListener('click', async ()=>{
+      const user = usernameEl.value.trim();
+      const pw = passwordEl.value;
+      if(!user || !pw){ showMsg('نام‌کاربری و رمز را وارد کنید','err'); return; }
+      if(pw.length < 8){ showMsg('رمز عبور باید حداقل 8 کاراکتر باشد','err'); return; }
+      const users = loadUsers();
+      if(users[user]){ showMsg('نام‌کاربری تکراری است. یک نام دیگر انتخاب کنید','err'); return; }
+      const hash = await hashPw(pw);
+      users[user] = {passwordHash: hash, profile: {}};
+      saveUsers(users);
+      showMsg('ثبت‌نام انجام شد. اکنون وارد شوید.','ok');
+    });
+
+    btnLogin.addEventListener('click', async ()=>{
+      const user = usernameEl.value.trim();
+      const pw = passwordEl.value;
+      if(!user || !pw){ showMsg('نام‌کاربری و رمز را وارد کنید','err'); return; }
+      const users = loadUsers();
+      if(!users[user]){ showMsg('کاربر یافت نشد. ابتدا ثبت‌نام کنید.','err'); return; }
+      const hash = await hashPw(pw);
+      if(hash !== users[user].passwordHash){ showMsg('رمز عبور اشتباه است','err'); return; }
+      // ورود موفق
+      localStorage.setItem('students_session', user);
+      showMsg('ورود موفق!','ok');
+      renderForUser(user);
+    });
+
+    $('btnLogout').addEventListener('click', ()=>{
+      localStorage.removeItem('students_session');
+      renderForUser(null);
+      showMsg('خروج انجام شد');
+    });
+
+    $('btnSave').addEventListener('click', ()=>{
+      const user = localStorage.getItem('students_session');
+      if(!user){ showMsg('ابتدا وارد شوید','err'); return; }
+      const users = loadUsers();
+      users[user].profile = {
+        fullname: $('fullname').value.trim(),
+        studentId: $('studentId').value.trim(),
+        class: $('class').value.trim(),
+        email: $('email').value.trim(),
+        phone: $('phone').value.trim(),
+        notes: $('notes').value.trim()
+      };
+      saveUsers(users);
+      showMsg('اطلاعات ذخیره شد','ok');
+      renderForUser(user);
+    });
+
+    function renderForUser(user){
+      if(user){
+        status.textContent = 'وارد شده: ' + user;
+        profileForm.classList.remove('hidden');
+        profileView.classList.remove('hidden');
+        // پر کردن فرم از اطلاعات ذخیره‌شده
+        const users = loadUsers();
+        const p = users[user].profile || {};
+        $('fullname').value = p.fullname || '';
+        $('studentId').value = p.studentId || '';
+        $('class').value = p.class || '';
+        $('email').value = p.email || '';
+        $('phone').value = p.phone || '';
+        $('notes').value = p.notes || '';
+        savedInfo.innerHTML = Object.keys(p).length? `<pre style="white-space:pre-wrap">${JSON.stringify(p, null, 2)}</pre>` : '<div class="muted">هنوز اطلاعاتی ذخیره نشده</div>';
+      }else{
+        status.textContent = 'هیچ کاربری وارد نشده';
+        profileForm.classList.add('hidden');
+        profileView.classList.add('hidden');
+      }
+    }
+
+    // اگر جلسه باز است، مستقیم نمایش بده
+    (function(){
+      const current = localStorage.getItem('students_session');
+      if(current){ renderForUser(current); }
+    })();
+
+  </script>
+</body>
+</html>
